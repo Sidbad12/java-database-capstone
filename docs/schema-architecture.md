@@ -61,6 +61,8 @@ This hybrid approach lets the system keep transactional integrity where it matte
 
 # Smart Clinic — Architecture Diagram (Mermaid)
 
+# Smart Clinic — Architecture Diagram (Mermaid)
+
 ```mermaid
 flowchart TD
 
@@ -104,7 +106,7 @@ end
 classDef ui fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px,color:#000;
 classDef app fill:#D1C4E9,stroke:#512DA8,stroke-width:2px,color:#000;
 classDef db fill:#B3E5FC,stroke:#0277BD,stroke-width:2px,color:#000;
-linkStyle default stroke:#757575,stroke-width:1.5px,color:#fff;
+linkStyle default stroke:#9E9E9E,stroke-width:1.5px,color:#000;
 
 class UI ui;
 class APP app;
