@@ -49,6 +49,7 @@ This document defines user stories for the Smart Clinic Management System, categ
 
 4. **Access Prescriptions**  
    As a patient, I want to view prescriptions issued by doctors for easy access and follow-up.
+   
 
 ---
 
