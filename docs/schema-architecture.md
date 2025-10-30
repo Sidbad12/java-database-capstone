@@ -62,6 +62,18 @@ This hybrid approach lets the system keep transactional integrity where it matte
 # Smart Clinic — Architecture Diagram (Mermaid)
 
 ```mermaid
+%%{init: {
+  "theme": "default",
+  "themeVariables": {
+    "background": "#ffffff",
+    "primaryColor": "#e8f5e9",
+    "primaryTextColor": "#000000",
+    "secondaryColor": "#f3e5f5",
+    "tertiaryColor": "#bbdefb",
+    "edgeLabelBackground":"#ffffff"
+  }
+}}%%
+
 flowchart TD
 
 %% ====== UI Layer ======
