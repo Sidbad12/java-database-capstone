@@ -1,0 +1,42 @@
+cat > ./pages/patientDashboard.html <<'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Patient Dashboard</title>
+  <link rel="stylesheet" href="../assets/css/adminDashboard.css" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/patientDashboard.css" />
+  <script src="../js/render.js" defer></script>
+  <script src="../js/util.js" defer></script>
+  <script src="../js/components/header.js" defer></script>
+  <script src="../js/components/footer.js" defer></script>
+  <script type="module" src="../js/components/modals.js"></script>
+</head>
+<body onload="renderContent()">
+  <div class="container">
+    <div class="wrapper">
+      <div id="header"></div>
+      <main class="main-content">
+        <input type="text" id="searchBar" class="searchBar" placeholder="Search doctors">
+        <div class="filter-wrapper">
+          <select class="filter-select" id="filterTime"><option>Time</option></select>
+          <select class="filter-select" id="filterSpecialty"><option>Specialty</option></select>
+        </div>
+        <div id="content"></div>
+      </main>
+      <div id="footer"></div>
+    </div>
+  </div>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script type="module" src="../js/patientDashboard.js" defer></script>
+</body>
+</html>
+EOF
