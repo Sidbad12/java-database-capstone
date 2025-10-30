@@ -59,6 +59,8 @@ This hybrid approach lets the system keep transactional integrity where it matte
 
 ## Architecture Diagram (Mermaid)
 
+# Smart Clinic — Architecture Diagram (Mermaid)
+
 ```mermaid
 flowchart TD
 
@@ -98,10 +100,11 @@ subgraph MONGO["MongoDB Data Layer"]
   MDB --> PRES["Prescription (Document)"]
 end
 
-%% ====== Styling ======
-classDef db fill:#d4f1f9,stroke:#036,stroke-width:1px,color:#000;
-classDef app fill:#e8dff5,stroke:#603,stroke-width:1px,color:#000;
-classDef ui fill:#d7f9d4,stroke:#063,stroke-width:1px,color:#000;
+%% ====== Styles ======
+classDef ui fill:#C8E6C9,stroke:#2E7D32,stroke-width:2px,color:#000;
+classDef app fill:#D1C4E9,stroke:#512DA8,stroke-width:2px,color:#000;
+classDef db fill:#B3E5FC,stroke:#0277BD,stroke-width:2px,color:#000;
+linkStyle default stroke:#757575,stroke-width:1.5px,color:#fff;
 
 class UI ui;
 class APP app;
