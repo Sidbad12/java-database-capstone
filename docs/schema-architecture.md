@@ -57,9 +57,9 @@ This hybrid approach lets the system keep transactional integrity where it matte
 12. **Monitoring & persistence**  
     Application logs, metrics, and audit entries (in MongoDB or a separate store) capture the transaction for observability.
 
-## Architecture Diagram (Mermaid)
 
-# Smart Clinic — Architecture Diagram (Mermaid)
+
+## Smart Clinic — Architecture Diagram (Mermaid)
 
 ```mermaid
 %%{init: {
