@@ -1,9 +1,9 @@
-package com.yourproject.controller;
+package com.project.back_end.controller;
 
-import com.yourproject.model.Doctor;
-import com.yourproject.model.Login;
-import com.yourproject.service.DoctorService;
-import com.yourproject.service.Service;
+import com.project.back_end.models.Doctor;
+import com.project.back_end.DTO.Login;
+import com.project.back_end.services.DoctorService;
+import com.project.back_end.services.ServiceMain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

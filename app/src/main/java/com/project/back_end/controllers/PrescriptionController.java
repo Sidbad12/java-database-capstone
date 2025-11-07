@@ -1,8 +1,9 @@
-package com.yourproject.controller;
+package com.project.back_end.controller;
 
-import com.yourproject.model.Prescription;
-import com.yourproject.service.PrescriptionService;
-import com.yourproject.service.Service;
+import com.project.back_end.models.Prescription;
+import com.project.back_end.services.PrescriptionService;
+import com.project.back_end.services.Service; 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
