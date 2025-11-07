@@ -1,10 +1,11 @@
-package com.yourproject.controller;
+package com.project.back_end.mvc;
 
+import com.project.back_end.service.TokenValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import com.yourproject.service.TokenValidationService; // adjust to your actual service package
+
 import java.util.Map;
 
 @Controller
