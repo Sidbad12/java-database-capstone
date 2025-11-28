@@ -14,7 +14,8 @@ FROM eclipse-temurin:17.0.15_6-jre
 
 WORKDIR /app
 
-COPY --from=builder /app/target/back-end-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder /app/target/back_end-1.0.0.jar app.jar
+
 
 EXPOSE 8080
 
