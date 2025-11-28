@@ -3,10 +3,11 @@ FROM maven:3.9.9-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
-COPY pom.xml .
+COPY pom.xml . 
 COPY src ./src
 
-RUN mvn clean package -DskipTests
+# Run Maven with -X for full debug logs
+RUN mvn clean package -DskipTests -X
 
 # Step 2: Use lightweight JRE 17 for running the app
 FROM eclipse-temurin:17.0.15_6-jre

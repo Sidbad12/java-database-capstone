@@ -32,7 +32,10 @@ public class TokenService {
         this.patientRepository = patientRepository;
     }
 
-    // Generate Token (valid for 7 days)
+    // ==========================
+    // Token Generation & Validation
+    // ==========================
+
     public String generateToken(String identifier, String role) {
         return Jwts.builder()
                 .setSubject(identifier) // email or username
@@ -43,7 +46,50 @@ public class TokenService {
                 .compact();
     }
 
-    // Extract identifier (email / username)
+    public boolean validateToken(String token, String userType) {
+        try {
+            String identifier = extractIdentifier(token);
+
+            switch (userType.toLowerCase()) {
+                case "admin":
+                    return adminRepository.findByUsername(identifier) != null;
+                case "doctor":
+                    return doctorRepository.findByEmail(identifier) != null;
+                case "patient":
+                    return patientRepository.findByEmail(identifier) != null;
+                default:
+                    return false;
+            }
+
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    // ==========================
+    // New methods to fix compile errors
+    // ==========================
+
+    // Extract email (alias for identifier in your case)
+    public String extractEmail(String token) {
+        return extractIdentifier(token);
+    }
+
+    // Decode token into Claims object
+    public Claims decodeToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    // Alias for extractEmail
+    public String getEmailFromToken(String token) {
+        return extractEmail(token);
+    }
+
+    // Extract the subject / identifier
     public String extractIdentifier(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -53,34 +99,7 @@ public class TokenService {
                 .getSubject();
     }
 
-    // Validate token belongs to correct user type
-    public boolean validateToken(String token, String userType) {
-        try {
-            String identifier = extractIdentifier(token);
-
-            if (userType.equalsIgnoreCase("admin")) {
-                Admin admin = adminRepository.findByUsername(identifier);
-                return admin != null;
-            }
-
-            if (userType.equalsIgnoreCase("doctor")) {
-                Doctor doctor = doctorRepository.findByEmail(identifier);
-                return doctor != null;
-            }
-
-            if (userType.equalsIgnoreCase("patient")) {
-                Patient patient = patientRepository.findByEmail(identifier);
-                return patient != null;
-            }
-
-            return false;
-
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-    }
-
-    // Get JWT signing key
+    // JWT Signing Key
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }

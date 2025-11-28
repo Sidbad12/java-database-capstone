@@ -53,6 +53,22 @@ public class Appointment {
     public LocalTime getAppointmentTimeOnly() {
         return this.appointmentTime != null ? this.appointmentTime.toLocalTime() : null;
     }
+    @Transient
+    public Long getDoctorId() {
+        return doctor != null ? doctor.getId() : null;
+    }
+
+    @Transient
+    public Long getPatientId() {
+        return patient != null ? patient.getId() : null;
+    }
+
+    // Optional: alias for appointmentTime
+    @Transient
+    public LocalDateTime getTime() {
+        return this.appointmentTime;
+    }
+
 
     // Getters and setters
     public Long getId() {

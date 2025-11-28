@@ -66,26 +66,39 @@ public class ServiceMain {
     }
 
     // 3. Filter Doctors
-    public Map<String, Object> filterDoctor(String name, String specialty, String time) {
+    public ResponseEntity<Map<String, Object>> filterDoctor(String name, String specialty, String time) {
         Map<String, Object> response = new HashMap<>();
-
         response.put("doctors",
-                doctorService.filterDoctorsByNameSpecilityandTime(name, specialty, time));
-
-        return response;
+                     doctorService.filterDoctorsByNameSpecilityandTime(name, specialty, time));
+        return ResponseEntity.ok(response);
     }
+    
 
     // 4. Validate Appointment Availability
-    public int validateAppointment(Appointment appointment) {
+    public ResponseEntity<Map<String, Object>> validateAppointment(Appointment appointment) {
+        Map<String, Object> response = new HashMap<>();
+        
         Optional<Doctor> doctorOptional = doctorRepository.findById(appointment.getDoctorId());
-
-        if (!doctorOptional.isPresent()) return -1;
-
+        
+        if (!doctorOptional.isPresent()) {
+            response.put("status", -1);
+            response.put("message", "Doctor not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+        
         Doctor doctor = doctorOptional.get();
-
-        boolean available = doctorService.getDoctorAvailability(doctor, appointment.getTime());
-        return available ? 1 : 0;
+        
+        // Convert appointment time to String to match availableTimes format (assuming HH:mm)
+        String appointmentTimeStr = appointment.getAppointmentTime().toLocalTime().toString(); 
+        
+        boolean available = doctor.getAvailableTimes().contains(appointmentTimeStr);
+        
+        response.put("status", available ? 1 : 0);
+        response.put("message", available ? "Available" : "Not available");
+        
+        return ResponseEntity.ok(response);
     }
+    
 
     // 5. Validate Patient before Registration
     public boolean validatePatient(Patient patient) {
