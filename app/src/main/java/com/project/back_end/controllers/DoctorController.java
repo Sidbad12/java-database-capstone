@@ -37,13 +37,20 @@ public class DoctorController {
         return doctorService.getDoctorAvailability(doctorId, date);
     }
 
-    // 2. Get List of Doctors
+    
+    // 4. Doctor Login
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> doctorLogin(@RequestBody Login login) {
+        return doctorService.validateDoctor(login);
+    }
+
+    // Line 43
     @GetMapping
     public ResponseEntity<Map<String, Object>> getDoctors() {
         return doctorService.getDoctors();
     }
 
-    // 3. Add New Doctor (Admin only)
+    // Line 57
     @PostMapping("/{token}")
     public ResponseEntity<Map<String, String>> saveDoctor(
             @PathVariable String token,
@@ -57,13 +64,7 @@ public class DoctorController {
         return doctorService.saveDoctor(doctor);
     }
 
-    // 4. Doctor Login
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> doctorLogin(@RequestBody Login login) {
-        return doctorService.validateDoctor(login);
-    }
-
-    // 5. Update Doctor Details
+    // Line 77
     @PutMapping("/{token}")
     public ResponseEntity<Map<String, String>> updateDoctor(
             @PathVariable String token,
@@ -77,7 +78,7 @@ public class DoctorController {
         return doctorService.updateDoctor(doctor);
     }
 
-    // 6. Delete Doctor
+    // Line 91
     @DeleteMapping("/{id}/{token}")
     public ResponseEntity<Map<String, String>> deleteDoctor(
             @PathVariable Long id,
@@ -91,13 +92,15 @@ public class DoctorController {
         return doctorService.deleteDoctor(id);
     }
 
-    // 7. Filter Doctors
+    // Line 101
     @GetMapping("/filter/{name}/{time}/{speciality}")
     public ResponseEntity<Map<String, Object>> filterDoctors(
             @PathVariable String name,
             @PathVariable String time,
             @PathVariable String speciality) {
 
-        return ResponseEntity.ok(serviceMain.filterDoctor(name, speciality, time)); // Fixed order
+        return serviceMain.filterDoctor(name, speciality, time);
     }
+
+    
 }

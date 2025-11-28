@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.HashMap;
+
 
 @RestController
 @RequestMapping("/appointments")
@@ -45,27 +47,36 @@ public class AppointmentController {
             @PathVariable String token,
             @RequestBody Appointment appointment) {
 
-        // Validate token for Patient
         ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "patient");
         if (validationResponse.getStatusCode().is4xxClientError()) {
-            return ResponseEntity.status(401).body(Map.of("message", "Invalid or expired token"));
+            return validationResponse;
         }
 
-        // Validate Appointment Slot
-        int validation = serviceMain.validateAppointment(appointment);
-        if (validation == -1) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Doctor does not exist"));
-        }
-        if (validation == 0) {
-            return ResponseEntity.status(409).body(Map.of("message", "Time slot not available"));
+        ResponseEntity<Map<String, Object>> appointmentValidation = serviceMain.validateAppointment(appointment);
+        
+        if (appointmentValidation.getBody() != null) {
+            Integer status = (Integer) appointmentValidation.getBody().get("status");
+            if (status != null && status == -1) {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Doctor does not exist");
+                return ResponseEntity.badRequest().body(response);
+            }
+            if (status != null && status == 0) {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Time slot not available");
+                return ResponseEntity.status(409).body(response);
+            }
         }
 
         int result = appointmentService.bookAppointment(appointment);
+        Map<String, String> response = new HashMap<>();
         if (result == 1) {
-            return ResponseEntity.status(201).body(Map.of("message", "Appointment booked successfully"));
+            response.put("message", "Appointment booked successfully");
+            return ResponseEntity.status(201).body(response);
         }
 
-        return ResponseEntity.status(500).body(Map.of("message", "Failed to book appointment"));
+        response.put("message", "Failed to book appointment");
+        return ResponseEntity.status(500).body(response);
     }
 
     // ✅ Update Appointment (Patient Side)

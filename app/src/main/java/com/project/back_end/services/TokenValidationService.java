@@ -8,8 +8,8 @@ import java.util.Map;
 public class TokenValidationService {
 
     // Mock method — replace with real JWT or DB validation later
-    public Map<String, String> validateToken(String token, String role) {
-        Map<String, String> errors = new HashMap<>();
+    public Map<String, Object> validateToken(String token, String role) {
+        Map<String, Object> errors = new HashMap<>();
 
         if (token == null || token.isEmpty()) {
             errors.put("error", "Token is missing");

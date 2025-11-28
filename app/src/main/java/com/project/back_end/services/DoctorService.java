@@ -6,11 +6,13 @@ import com.project.back_end.models.Appointment;
 import com.project.back_end.repo.DoctorRepository;
 import com.project.back_end.repo.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -25,7 +27,7 @@ public class DoctorService {
     @Autowired
     private TokenService tokenService;
 
-    // ================= Get Doctor Availability =================
+    // ================= Get Doctor Availability (returns List) =================
     public List<String> getDoctorAvailability(Long doctorId, LocalDate date) {
         // Example available time slots
         List<String> allSlots = Arrays.asList("09:00 AM", "10:00 AM", "11:00 AM", "03:00 PM", "04:00 PM", "05:00 PM");
@@ -46,50 +48,86 @@ public class DoctorService {
         return availableSlots;
     }
 
+    // ================= Get Doctor Availability (returns ResponseEntity) =================
+    public ResponseEntity<Map<String, Object>> getDoctorAvailability(Long doctorId, String dateString) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            LocalDate date = LocalDate.parse(dateString);
+            List<String> availableSlots = getDoctorAvailability(doctorId, date);
+            
+            response.put("availableSlots", availableSlots);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("message", "Error retrieving availability");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     // ================= Save Doctor =================
-    public int saveDoctor(Doctor doctor) {
+    public ResponseEntity<Map<String, String>> saveDoctor(Doctor doctor) {
+        Map<String, String> response = new HashMap<>();
+        
         try {
             Doctor existing = doctorRepository.findByEmail(doctor.getEmail());
             if (existing != null) {
-                return -1; // Doctor already exists
+                response.put("message", "Doctor already exists");
+                return ResponseEntity.badRequest().body(response);
             }
             doctorRepository.save(doctor);
-            return 1; // Success
+            response.put("message", "Doctor saved successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            return 0; // Error
+            response.put("message", "Error saving doctor");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     // ================= Update Doctor =================
-    public int updateDoctor(Doctor doctor) {
+    public ResponseEntity<Map<String, String>> updateDoctor(Doctor doctor) {
+        Map<String, String> response = new HashMap<>();
+        
         Optional<Doctor> existing = doctorRepository.findById(doctor.getId());
         if (existing.isEmpty()) {
-            return -1; // Not found
+            response.put("message", "Doctor not found");
+            return ResponseEntity.badRequest().body(response);
         }
+        
         try {
             doctorRepository.save(doctor);
-            return 1;
+            response.put("message", "Doctor updated successfully");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return 0;
+            response.put("message", "Error updating doctor");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     // ================= Get All Doctors =================
-    public List<Doctor> getDoctors() {
-        return doctorRepository.findAll();
+    public ResponseEntity<Map<String, Object>> getDoctors() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("doctors", doctorRepository.findAll());
+        return ResponseEntity.ok(response);
     }
 
     // ================= Delete Doctor =================
-    public int deleteDoctor(long id) {
+    public ResponseEntity<Map<String, String>> deleteDoctor(long id) {
+        Map<String, String> response = new HashMap<>();
+        
         Optional<Doctor> doc = doctorRepository.findById(id);
-        if (doc.isEmpty()) return -1;
+        if (doc.isEmpty()) {
+            response.put("message", "Doctor not found");
+            return ResponseEntity.badRequest().body(response);
+        }
 
         try {
             appointmentRepository.deleteAllByDoctorId(id);
             doctorRepository.deleteById(id);
-            return 1;
+            response.put("message", "Doctor deleted successfully");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return 0;
+            response.put("message", "Error deleting doctor");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
@@ -103,7 +141,7 @@ public class DoctorService {
             return ResponseEntity.badRequest().body(response);
         }
 
-        String token = tokenService.generateToken(doctor.getId(), "doctor");
+        String token = tokenService.generateToken(String.valueOf(doctor.getId()), "doctor");
 
         response.put("message", "Login Successful");
         response.put("token", token);
@@ -170,8 +208,23 @@ public class DoctorService {
     private List<Doctor> filterDoctorByTime(List<Doctor> doctors, String amOrPm) {
         List<Doctor> filtered = new ArrayList<>();
         for (Doctor d : doctors) {
-            if (d.getAvailableTime().equalsIgnoreCase(amOrPm)) {
-                filtered.add(d);
+            // Fixed: Changed from getAvailableTime() to getAvailableTimes()
+            if (d.getAvailableTimes() != null && !d.getAvailableTimes().isEmpty()) {
+                // Check if any available time matches the AM/PM preference
+                boolean matches = d.getAvailableTimes().stream()
+                    .anyMatch(time -> {
+                        try {
+                            LocalTime t = LocalTime.parse(time);
+                            return (amOrPm.equalsIgnoreCase("AM") && t.isBefore(LocalTime.NOON)) ||
+                                   (amOrPm.equalsIgnoreCase("PM") && !t.isBefore(LocalTime.NOON));
+                        } catch (Exception e) {
+                            // If time format doesn't parse, try direct string comparison
+                            return time.toUpperCase().contains(amOrPm.toUpperCase());
+                        }
+                    });
+                if (matches) {
+                    filtered.add(d);
+                }
             }
         }
         return filtered;

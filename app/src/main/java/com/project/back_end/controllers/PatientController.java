@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.HashMap;
+
 
 @RestController
 @RequestMapping("/patient")
@@ -35,7 +37,17 @@ public class PatientController {
     // 2. Create a New Patient (Sign Up)
     @PostMapping
     public ResponseEntity<Map<String, String>> createPatient(@RequestBody Patient patient) {
-        return patientService.createPatient(patient);
+        Map<String, String> response = new HashMap<>();
+        
+        int result = patientService.createPatient(patient);
+        
+        if (result == 1) {
+            response.put("message", "Patient created successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } else {
+            response.put("message", "Failed to create patient");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
     // 3. Patient Login
@@ -55,7 +67,7 @@ public class PatientController {
             return new ResponseEntity(validationResponse.getBody(), validationResponse.getStatusCode());
         }
 
-        return patientService.getPatientAppointment(id);
+        return patientService.getPatientAppointment(id, token);
     }
 
     // 5. Filter Patient Appointments
