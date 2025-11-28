@@ -1,7 +1,7 @@
-package com.project.back_end.controller;
+package com.project.back_end.controllers;
 
 import com.project.back_end.models.Doctor;
-import com.project.back_end.DTO.Login;
+import com.project.back_end.dto.Login;
 import com.project.back_end.services.DoctorService;
 import com.project.back_end.services.ServiceMain;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class DoctorController {
     private DoctorService doctorService;
 
     @Autowired
-    private Service service;
+    private ServiceMain serviceMain;  // Fixed: use ServiceMain
 
     // 1. Get Doctor Availability
     @GetMapping("/availability/{user}/{doctorId}/{date}/{token}")
@@ -29,9 +29,8 @@ public class DoctorController {
             @PathVariable String date,
             @PathVariable String token) {
 
-        // Validate token based on user role
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, user);
-        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, user);
+        if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return new ResponseEntity(validationResponse.getBody(), validationResponse.getStatusCode());
         }
 
@@ -50,9 +49,8 @@ public class DoctorController {
             @PathVariable String token,
             @RequestBody Doctor doctor) {
 
-        // Validate token for admin
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "admin");
-        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "admin");
+        if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return validationResponse;
         }
 
@@ -71,9 +69,8 @@ public class DoctorController {
             @PathVariable String token,
             @RequestBody Doctor doctor) {
 
-        // Validate token for admin
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "admin");
-        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "admin");
+        if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return validationResponse;
         }
 
@@ -86,9 +83,8 @@ public class DoctorController {
             @PathVariable Long id,
             @PathVariable String token) {
 
-        // Validate token for admin
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "admin");
-        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "admin");
+        if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return validationResponse;
         }
 
@@ -102,6 +98,6 @@ public class DoctorController {
             @PathVariable String time,
             @PathVariable String speciality) {
 
-        return service.filterDoctor(name, time, speciality);
+        return ResponseEntity.ok(serviceMain.filterDoctor(name, speciality, time)); // Fixed order
     }
 }

@@ -1,6 +1,6 @@
-package com.project_back_end.repo;
+package com.project.back_end.repo;
 
-import com.project_back_end.models.Prescription;
+import com.project.back_end.models.Prescription;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

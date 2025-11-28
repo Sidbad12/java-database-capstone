@@ -1,9 +1,9 @@
-package com.project.back_end.controller;
+package com.project.back_end.controllers;
 
-import com.project.back_end.models.Login;
+import com.project.back_end.dto.Login;
 import com.project.back_end.models.Patient;
 import com.project.back_end.services.PatientService;
-import com.project.back_end.services.Service; 
+import com.project.back_end.services.ServiceMain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -19,14 +19,13 @@ public class PatientController {
     private PatientService patientService;
 
     @Autowired
-    private Service service;
+    private ServiceMain serviceMain;  // fixed
 
     // 1. Get Patient Details
     @GetMapping("/{token}")
     public ResponseEntity<Map<String, Object>> getPatientDetails(@PathVariable String token) {
-
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "patient");
-        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "patient");
+        if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return new ResponseEntity(validationResponse.getBody(), validationResponse.getStatusCode());
         }
 
@@ -42,7 +41,7 @@ public class PatientController {
     // 3. Patient Login
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> patientLogin(@RequestBody Login login) {
-        return service.validatePatientLogin(login);
+        return serviceMain.validatePatientLogin(login);
     }
 
     // 4. Get Patient Appointments
@@ -51,8 +50,8 @@ public class PatientController {
             @PathVariable Long id,
             @PathVariable String token) {
 
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "patient");
-        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "patient");
+        if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return new ResponseEntity(validationResponse.getBody(), validationResponse.getStatusCode());
         }
 
@@ -66,11 +65,11 @@ public class PatientController {
             @PathVariable String name,
             @PathVariable String token) {
 
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "patient");
-        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "patient");
+        if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return new ResponseEntity(validationResponse.getBody(), validationResponse.getStatusCode());
         }
 
-        return service.filterPatient(condition, name, token);
+        return serviceMain.filterPatient(condition, name, token);
     }
 }

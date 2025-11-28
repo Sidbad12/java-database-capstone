@@ -2,7 +2,7 @@ package com.project.back_end.controllers;
 
 import com.project.back_end.models.Appointment;
 import com.project.back_end.services.AppointmentService;
-import com.project.back_end.services.Service;
+import com.project.back_end.services.ServiceMain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class AppointmentController {
     private AppointmentService appointmentService;
 
     @Autowired
-    private Service service;
+    private ServiceMain serviceMain;  // Use this for all service calls
 
     // ✅ Get Appointments (Doctor Side)
     @GetMapping("/{date}/{patientName}/{token}")
@@ -28,8 +28,8 @@ public class AppointmentController {
             @PathVariable String token) {
 
         // Validate token for Doctor
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "doctor");
-        if (validationResponse != null) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "doctor");
+        if (validationResponse.getStatusCode().is4xxClientError()) {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid or expired token"));
         }
 
@@ -46,13 +46,13 @@ public class AppointmentController {
             @RequestBody Appointment appointment) {
 
         // Validate token for Patient
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "patient");
-        if (validationResponse != null) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "patient");
+        if (validationResponse.getStatusCode().is4xxClientError()) {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid or expired token"));
         }
 
         // Validate Appointment Slot
-        int validation = service.validateAppointment(appointment);
+        int validation = serviceMain.validateAppointment(appointment);
         if (validation == -1) {
             return ResponseEntity.badRequest().body(Map.of("message", "Doctor does not exist"));
         }
@@ -74,8 +74,8 @@ public class AppointmentController {
             @PathVariable String token,
             @RequestBody Appointment appointment) {
 
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "patient");
-        if (validationResponse != null) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "patient");
+        if (validationResponse.getStatusCode().is4xxClientError()) {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid or expired token"));
         }
 
@@ -88,8 +88,8 @@ public class AppointmentController {
             @PathVariable long id,
             @PathVariable String token) {
 
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "patient");
-        if (validationResponse != null) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "patient");
+        if (validationResponse.getStatusCode().is4xxClientError()) {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid or expired token"));
         }
 

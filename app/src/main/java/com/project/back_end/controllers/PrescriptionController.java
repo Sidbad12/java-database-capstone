@@ -2,7 +2,7 @@ package com.project.back_end.controller;
 
 import com.project.back_end.models.Prescription;
 import com.project.back_end.services.PrescriptionService;
-import com.project.back_end.services.Service; 
+import com.project.back_end.services.ServiceMain; 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ public class PrescriptionController {
     private PrescriptionService prescriptionService;
 
     @Autowired
-    private Service service;
+    private ServiceMain serviceMain;  // fixed
 
     // 1. Save Prescription (Doctor Only)
     @PostMapping("/{token}")
@@ -28,8 +28,8 @@ public class PrescriptionController {
             @RequestBody Prescription prescription) {
 
         // Validate doctor token
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "doctor");
-        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "doctor");
+        if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return new ResponseEntity(validationResponse.getBody(), validationResponse.getStatusCode());
         }
 
@@ -43,8 +43,8 @@ public class PrescriptionController {
             @PathVariable String token) {
 
         // Validate doctor token
-        ResponseEntity<Map<String, String>> validationResponse = service.validateToken(token, "doctor");
-        if (validationResponse.getStatusCode() != HttpStatus.OK) {
+        ResponseEntity<Map<String, String>> validationResponse = serviceMain.validateToken(token, "doctor");
+        if (!validationResponse.getStatusCode().is2xxSuccessful()) {
             return new ResponseEntity(validationResponse.getBody(), validationResponse.getStatusCode());
         }
 
