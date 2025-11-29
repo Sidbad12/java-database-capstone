@@ -1,5 +1,5 @@
 # Smart Clinic Management System
-# 🏥 Smart Clinic Management System
+
 
 A comprehensive full-stack clinic management system built with Spring Boot, MySQL, MongoDB, and modern web technologies. This enterprise-grade application streamlines healthcare operations by managing doctors, patients, appointments, and prescriptions through role-based dashboards.
 
